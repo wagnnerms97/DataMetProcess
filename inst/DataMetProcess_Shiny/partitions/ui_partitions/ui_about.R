@@ -11,9 +11,7 @@ ui_about <- function(id){
         tags$p("The DataMetProcess application is a shiny tool designed for basic and fundamental meteorological data processing based on the DataMetProcess package (link). Although it was developed using INMET data, it was programmed to be easily applicable to other databases."),
         tags$h3("Authors"),
         tags$p("
-               Wagner Martins dos Santos,
-               Edimir Xavier Leal Ferraz,
-               Lady Daiane Costa de Sousa Martins
+               Wagner Martins dos Santos, Edimir Xavier Leal Ferraz, Abelardo Antônio de Assunção Montenegro, Lady Daiane Costa de Sousa Martins, Alan Cézar Bezerra, Ênio Farias de França e Silva, Thieres George Freire da Silva, João L.M.P. de Lima, and Alexandre Maniçoba da Rosa Ferraz Jardim
                "),
         tags$h3("Citation"),
         tags$p("
