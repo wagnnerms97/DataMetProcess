@@ -26,7 +26,7 @@ ui_about <- function(id){
         tags$h3("Help"),
         tags$a(
           "Visit github for help on how to use the application",
-          href = "https://github.com/wagnnerms97/DataMetProcess-Global/tree/main/DataMetProcess_Shiny",
+          href = "https://github.com/wagnnerms97/DataMetProcess/tree/main/inst/DataMetProcess_Shiny",
           target="_blank"
         ),
         tags$h3("Acknowledgements"),
