@@ -1,0 +1,35 @@
+Package: DataMetProcess
+Type: Package
+Title: Meteorological Data Processing
+Version: 1.0.2
+Authors@R:
+    c(
+      person("Wagner Martins dos", "Santos",
+              email = "wagnnerms97@gmail.com", role = c("aut", "cre"),
+              comment = c(ORCID = "0000-0002-3584-1323")),
+      person("Edimir Xavier Leal", "Ferraz" ,
+              email = "edimirferraz@outlook.com", role = "aut",
+              comment = c(ORCID = "0000-0002-3151-8916")),
+      person("Lady Daiane Costa de Sousa", "Martins",
+              email = "teodosiod01@gmail.com", role = "aut",
+              comment = c(ORCID = "0000-0002-0942-4673"))
+    )
+Maintainer: Wagner Martins dos Santos <wagnnerms97@gmail.com>
+Description: Set of tools aimed at processing meteorological data, converting hourly recorded data to daily, monthly and annual data.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/wagnnerms97/DataMetProcessGlobal
+RoxygenNote: 7.3.1
+Imports: 
+    dplyr,
+    tidyr,
+    lubridate,
+    rlang,
+    utils,
+    base,
+    shiny
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
