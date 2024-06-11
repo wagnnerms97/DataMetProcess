@@ -191,3 +191,16 @@ We can calculate reference evapotranspiration for daily data using the `calculat
  head(df.Eto)
  
 ```
+
+
+# Shiny DataMetProcess with `DMPshiny()`
+
+The Shiny application can be accessed via DMPshiny(), and by default, a page will open in the browser. For additional configurations, refer to ***?DMPshiny()***.
+
+```{r eval=FALSE}
+DMPshiny()
+```
+
+![home page](home_page.png)
+
+Todo o código referente ao aplicativo encontra-se em `inst/DataMetProcess_Shiny`

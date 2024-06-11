@@ -13,6 +13,8 @@ Wagner Martins dos Santos
   - [Yearly](#yearly)
 - [Reference evapotranspiration with
   `calculateETrefPM()`](#reference-evapotranspiration-with-calculateetrefpm)
+- [Shiny DataMetProcess with
+  `DMPshiny()`](#shiny-datametprocess-with-dmpshiny)
 
 ``` r
 library(DataMetProcess)
@@ -52,7 +54,7 @@ head(info.inmet)
 #> 5 2000  INMET     NE    BA A401          SALVADOR 2000-05-13 2000-12-31
 #> 
 #> $Saved
-#> [1] "C:\\Users\\wagne\\AppData\\Local\\Temp\\RtmpshGqaK\\file6e047b3b5c46"
+#> [1] "C:\\Users\\wagne\\AppData\\Local\\Temp\\Rtmp8cdOyO\\file3744fec476f"
 ```
 
 Now we have an object containing a list of files in `$Addresses` within
@@ -276,3 +278,21 @@ Penman-Monteith method, according to:”
 #> 5 2008-01-05 6.495420  5   5 2.842662 2.109539 0.1716782 0.06105032 10.076827
 #> 6 2008-01-06 2.308457  6   6 2.387142 2.131480 0.1473864 0.06096122  8.308235
 ```
+
+# Shiny DataMetProcess with `DMPshiny()`
+
+The Shiny application can be accessed via DMPshiny(), and by default, a
+page will open in the browser. For additional configurations, refer to
+***?DMPshiny()***.
+
+``` r
+DMPshiny()
+```
+
+<figure>
+<img src="home_page.png" alt="home page" />
+<figcaption aria-hidden="true">home page</figcaption>
+</figure>
+
+Todo o código referente ao aplicativo encontra-se em
+`inst/DataMetProcess_Shiny`
