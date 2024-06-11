@@ -54,7 +54,7 @@ head(info.inmet)
 #> 5 2000  INMET     NE    BA A401          SALVADOR 2000-05-13 2000-12-31
 #> 
 #> $Saved
-#> [1] "C:\\Users\\wagne\\AppData\\Local\\Temp\\Rtmp8cdOyO\\file3744fec476f"
+#> [1] "C:\\Users\\wagne\\AppData\\Local\\Temp\\RtmpETykvp\\file2c842f3b7993"
 ```
 
 Now we have an object containing a list of files in `$Addresses` within
@@ -294,5 +294,5 @@ DMPshiny()
 <figcaption aria-hidden="true">home page</figcaption>
 </figure>
 
-Todo o código referente ao aplicativo encontra-se em
-`inst/DataMetProcess_Shiny`
+The same applies to all the code related to the application, which can
+be found in `inst/DataMetProcess_Shiny`

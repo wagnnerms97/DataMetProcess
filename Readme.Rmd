@@ -203,4 +203,4 @@ DMPshiny()
 
 ![home page](home_page.png)
 
-Todo o código referente ao aplicativo encontra-se em `inst/DataMetProcess_Shiny`
+The same applies to all the code related to the application, which can be found in `inst/DataMetProcess_Shiny`
