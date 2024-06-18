@@ -212,7 +212,7 @@ serverProcess <- function(id, Data){
 
     output$table_diario <- renderReactable({
       pers_reactable(mutate(TableDiario(),
-                            Data = as.character(Data)))
+                            Date = as.character(Date)))
     })
 
     # Tabela Mensal ----------------------------------

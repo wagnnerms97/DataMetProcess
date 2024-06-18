@@ -34,7 +34,7 @@ serverEvapo <-
       output$Rad <- renderUI({
         selectInput(
           NS(id,"Rad"),
-          "Radiation:",
+          "Global solar radiation (MJ/m²):",
           choices = choiceseto(),
           selected = choiceseto()[5]
         )
@@ -80,17 +80,17 @@ serverEvapo <-
 
         df <-
           calculateETrefPM(data = df,
-                         Lat = input$Lat,
-                         Alt = input$Alt,
-                         Alt_an = input$Alt_an,
+                         lat = input$Lat,
+                         alt = input$Alt,
+                         za = input$Alt_an,
                          DAP = input$DAP,
-                         Date = colnames(df)[1],
-                         Temp = input$Temp,
-                         #G = input$G,
-                         Humid = input$Humid,
-                         Rad = input$Rad,
-                         Press = input$Patm,
-                         Wind = input$Wind,
+                         date = colnames(df)[1],
+                         Ta = input$Temp,
+                         G = input$G,
+                         RH = input$Humid,
+                         Rg = input$Rad,
+                         AP = input$Patm,
+                         WS = input$Wind,
                          Kc = input$Kc
           )
 

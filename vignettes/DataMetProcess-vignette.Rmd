@@ -173,22 +173,22 @@ We can calculate reference evapotranspiration for daily data using the `calculat
  df$radiacao_global_kj_m <- df$radiacao_global_kj_m/1000
  colnames(df)[3] <- "radiacao_global_mj_m"
 
- df.Eto <-
-   calculateETrefPM(
-     data = df,
-     lat = -21.980353,
-     alt = 859.29,
-     alt_an = 10,
-     dap = 1,
-     date = colnames(df)[1],
-     temp = colnames(df)[7],
-     g = NULL,
-     humid = colnames(df)[15],
-     rad = colnames(df)[3],
-     press = colnames(df)[4],
-     wind = colnames(df)[18],
-     kc = NULL
-  )
+df.Eto <-
+ calculateETrefPM(
+   data = df,
+   lat = -21.980353,
+   alt = 859.29,
+   za = 10,
+   DAP = 1,
+   date = colnames(df)[1],
+   Ta = colnames(df)[7],
+   G = NULL,
+   RH = colnames(df)[15],
+   Rg = colnames(df)[3],
+   AP = colnames(df)[4],
+   WS = colnames(df)[18],
+   Kc = NULL
+ )
  
  head(df.Eto)
  
