@@ -2,7 +2,7 @@
 required_packages <- c(
   "shiny", "shinydashboard", "shinyjs", "shinybusy", "shinyalert",
   "shinyWidgets", "reactable", "plotly", "tidyverse", "zoo",
-  "lubridate", "janitor"
+  "lubridate", "janitor","DataMetProcess"
 )
 
 # Função para verificar e instalar pacotes necessários
