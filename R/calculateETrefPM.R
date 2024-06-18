@@ -7,23 +7,23 @@
 #' @param data Data frame containing the data
 #' @param lat Numeric, latitude in decimals
 #' @param alt Numeric, altitude in meters
-#' @param alt_an Numeric, anemometer height in meters
-#' @param dap Numeric, days after planting for the first column date
+#' @param za Numeric, anemometer height in meters
+#' @param DAP Numeric, days after planting for the first column date
 #' @param date String with the column name containing date records (R default date: "\%Y-\%m-\%d")
-#' @param temp String with the column name containing temperature records in °C
-#' @param g Optional, if NULL will be considered as zero. String with the column name containing soil heat flux (MJ/m²/day)
-#' @param humid String with the column name containing relative humidity records in \%
-#' @param rad String with the column name containing global radiation records in MJ/m²
-#' @param press String with the column name containing atmospheric pressure records in hPa
-#' @param wind String with the column name containing wind speed records in m/s
-#' @param kc Optional, when not NULL the crop evapotranspiration ETc is calculated based on ETref. String with the column name containing crop coefficient (Kc) records
+#' @param Ta String with the column name containing temperature records in °C
+#' @param G Optional, if NULL will be considered as zero. String with the column name containing soil heat flux (MJ/m²/day)
+#' @param RH String with the column name containing relative humidity records in \%
+#' @param Rg String with the column name containing global radiation records in MJ/m²
+#' @param AP String with the column name containing atmospheric pressure records in hPa
+#' @param WS String with the column name containing wind speed records in m/s
+#' @param Kc Optional, when not NULL the crop evapotranspiration ETc is calculated based on ETref. String with the column name containing crop coefficient (Kc) records
 #'
 #' @details
 #' The FAO Penman–Monteith method:
 #'
 #' \deqn{ETrefPM = \frac{0.408 \Delta(Rn-G) + \gamma \frac{900}{T+273}u_{2}(e_{s}-e_{a})}{\Delta+\gamma(1+0.34u_{2})}}
 #'
-#' where: ETref - reference evapotranspiration (mm/dia), delta - slope of the saturated water–vapor-pressure curve (kPA/°C), Rn - net radiation (MJ/m²/dia), G - soil heat flux (MJ/m²/day), y - psychrometric constant (kPA/°C), T - average daily air temperature (°C), u2 -wind speed at 2m height (m/s), es - saturation vapor pressure (kPa), e ea - actual vapor pressure (kPa)
+#' where: ETref - reference evapotranspiration (mm/dia), delta - slope of the saturated water–vapor-pressure curve (kPA/°C), Rn - net radiation (MJ/m²/dia), G - soil heat flux (MJ/m²/day), y - psychrometric constant (kPA/°C), T - average daily air temperature (°C), u2 - wind speed at 2m height (m/s), es - saturation vapor pressure (kPa), e ea - actual vapor pressure (kPa)
 #'
 #' @references Allen, R.G., Pereira, L.S., Raes, D., Smith, M., 1998. Crop evapotranspiration – guidelines for computing crop water requirements – FAO Irrigation and Drainage Paper 56. FAO, 1998. ISBN 92-5-104219-5.
 #'
@@ -32,7 +32,7 @@
 #' date;
 #' etref - reference evapotranspiration (mm/dia);
 #' dj - julian day;
-#' dap - days after planting;
+#' DAP - days after planting;
 #' es - saturation vapor pressure (kPa);
 #' ea - actual vapor pressure (kPa);
 #' delta - slope of the saturated water–vapor-pressure curve (kPA/°C);
@@ -65,16 +65,16 @@
 #'     data = df,
 #'     lat = -21.980353,
 #'     alt = 859.29,
-#'     alt_an = 10,
-#'     dap = 1,
+#'     za = 10,
+#'     DAP = 1,
 #'     date = colnames(df)[1],
-#'     temp = colnames(df)[7],
-#'     g = NULL,
-#'     humid = colnames(df)[15],
-#'     rad = colnames(df)[3],
-#'     press = colnames(df)[4],
-#'     wind = colnames(df)[18],
-#'     kc = NULL
+#'     Ta = colnames(df)[7],
+#'     G = NULL,
+#'     RH = colnames(df)[15],
+#'     Rg = colnames(df)[3],
+#'     AP = colnames(df)[4],
+#'     WS = colnames(df)[18],
+#'     Kc = NULL
 #'   )
 #'
 #'
@@ -83,16 +83,16 @@
 calculateETrefPM <- function(data = NULL,
                              lat = NULL,
                              alt = NULL,
-                             alt_an = NULL,
-                             dap = 1,
+                             za = NULL,
+                             DAP = 1,
                              date = NULL,
-                             temp = NULL,
-                             g = NULL,
-                             humid = NULL,
-                             rad = NULL,
-                             press = NULL,
-                             wind = NULL,
-                             kc = NULL
+                             Ta = NULL,
+                             G = NULL,
+                             RH = NULL,
+                             Rg = NULL,
+                             AP = NULL,
+                             WS = NULL,
+                             Kc = NULL
 
 ){
   # Define a helper function to extract a column from the data frame
@@ -109,10 +109,10 @@ calculateETrefPM <- function(data = NULL,
     }
   }
 
-  # If g (soil heat flux density) is not provided, set it to 0
-  if(length(g) == 0){
-    data$g <- 0
-    g <- "g"
+  # If G (soil heat flux density) is not provided, set it to 0
+  if(length(G) == 0){
+    data$G <- 0
+    G <- "G"
   }
 
   # Store the initial number of columns in the data frame
@@ -125,30 +125,30 @@ calculateETrefPM <- function(data = NULL,
     )
   )
 
-  # Generate a sequence for dap (Day After Planting) starting from the provided dap
-  data$dap <- seq(from = dap, length.out = nrow(data), by = 1)
+  # Generate a sequence for DAP (Day After Planting) starting from the provided DAP
+  data$DAP <- seq(from = DAP, length.out = nrow(data), by = 1)
 
   # Calculate es (saturation vapor pressure)
-  data$es <- 0.611 * 10^((7.5 * col_string(data, str = temp, usestr = TRUE)) /
-                           (237.3 + col_string(data, str = temp, usestr = TRUE)))
+  data$es <- 0.611 * 10^((7.5 * col_string(data, str = Ta, usestr = TRUE)) /
+                           (237.3 + col_string(data, str = Ta, usestr = TRUE)))
 
   # Calculate delta (slope of the vapor pressure curve)
   data$delta <- (4098 * col_string(data, ncolbk + 3)) /
-    ((237.3 + col_string(data, str = temp, usestr = TRUE))^2)
+    ((237.3 + col_string(data, str = Ta, usestr = TRUE))^2)
 
   # Calculate ea (actual vapor pressure)
   data$ea <-
-    col_string(data, str = humid, usestr = TRUE) / 100 * col_string(data, ncolbk + 3)
+    col_string(data, str = RH, usestr = TRUE) / 100 * col_string(data, ncolbk + 3)
 
   # Convert pressure to kPa
-  data$p_kpa <- col_string(data, str = press, usestr = TRUE) / 10
+  data$p_kpa <- col_string(data, str = AP, usestr = TRUE) / 10
 
   # Calculate psychrometric constant (gamma)
   data$y <- 0.665 * (10^(-3)) * col_string(data, ncolbk + 6)
 
   # Convert wind speed at 2 meters height
   data$u2 <-
-    col_string(data, 5) * 4.87 / (base::log(67.8 * alt_an - 5.42))
+    col_string(data, 5) * 4.87 / (base::log(67.8 * za - 5.42))
 
   # Calculate dr (inverse relative distance Earth-Sun)
   data$dr <-
@@ -176,13 +176,13 @@ calculateETrefPM <- function(data = NULL,
     (0.75 + 2 * 10^-5 * alt) * col_string(data, ncolbk + 12)
 
   # Calculate net shortwave radiation (boc)
-  data$boc <- col_string(data, str = rad, usestr = TRUE) * (1 - 0.23)
+  data$boc <- col_string(data, str = Rg, usestr = TRUE) * (1 - 0.23)
 
   # Calculate net longwave radiation (bol)
   data$bol <-
-    4.903 * 10^-9 * (col_string(data, str = temp, usestr = TRUE) + 273.15)^4 *
+    4.903 * 10^-9 * (col_string(data, str = Ta, usestr = TRUE) + 273.15)^4 *
     (0.34 - 0.14 * base::sqrt(col_string(data, ncolbk + 5))) *
-    (1.35 * (col_string(data, str = rad, usestr = TRUE) /
+    (1.35 * (col_string(data, str = Rg, usestr = TRUE) /
                col_string(data, ncolbk + 13)) - 0.35)
 
   # Calculate net radiation (rn)
@@ -193,9 +193,9 @@ calculateETrefPM <- function(data = NULL,
   # Calculate reference evapotranspiration (etref) using the Penman-Monteith equation
   data$etref <-
     ((0.408 * col_string(data, ncolbk + 4) *
-        (col_string(data, ncolbk + 16) - col_string(data, str = g, usestr = TRUE))) +
+        (col_string(data, ncolbk + 16) - col_string(data, str = G, usestr = TRUE))) +
        ((col_string(data, ncolbk + 7) * (900 /
-                                           (col_string(data, str = temp, usestr = TRUE) + 273))) *
+                                           (col_string(data, str = Ta, usestr = TRUE) + 273))) *
           (col_string(data, ncolbk + 8) *
              (col_string(data, ncolbk + 3) -
                 col_string(data, ncolbk + 5))))) /
@@ -203,10 +203,10 @@ calculateETrefPM <- function(data = NULL,
        col_string(data, ncolbk + 7) * (1 + 0.34 *
                                          col_string(data, ncolbk + 8)))
 
-  # Calculate crop evapotranspiration (etc) if kc is provided
-  if(length(kc) != 0){
-    if(kc != ""){
-      data$etc <- data$etref * col_string(data, str = kc, usestr = TRUE)
+  # Calculate crop evapotranspiration (etc) if Kc is provided
+  if(length(Kc) != 0){
+    if(Kc != ""){
+      data$etc <- data$etref * col_string(data, str = Kc, usestr = TRUE)
     }
   }
 
