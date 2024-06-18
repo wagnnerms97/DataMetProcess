@@ -31,7 +31,7 @@ DMPshiny <- function(host = "127.0.0.1",
 
   shiny::shinyOptions(maxUploadSize = maxUploadSize)
 
-  shiny::runApp(system.file("DataMetProcess_Shiny/App.R",package="DataMetProcess"),
+  shiny::runApp(system.file("DataMetProcess_Shiny/app.R",package="DataMetProcess"),
          launch.browser = launch.browser,
          port = port,
          host = getOption("shiny.host", host))
