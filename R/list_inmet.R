@@ -2,13 +2,13 @@
 #' List of data available at INMET by year
 #'
 #' @description
-#' Collects the available files for the year and returns a list containing: 1) a table containing the addresses of each file inside the zip for later extraction by the down_inmet() function, 2) another structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
+#' Collects the available files for the year and returns a list containing: 1) a table containing the addresses of each file inside the zip for later extraction by the down_inmet() function, 2) Yearther structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
 #'
 #' @param year year for download in the INMET database
 #' @param filename string containing the path and name of the file with the extension ".zip", if NULL (default) it will be saved in a temporary file
 #'
 #' @return
-#' List containing: 1) a table containing the addresses of each file inside the zip for later extraction by the unzip() function of the utils package, 2) another structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
+#' List containing: 1) a table containing the addresses of each file inside the zip for later extraction by the unzip() function of the utils package, 2) Yearther structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
 #'
 #'
 #' @export
@@ -64,18 +64,18 @@ list_inmet <- function(
   # List the contents of the zip file
   df <- utils::unzip(zipfile = temp, list = TRUE)[1]
 
-  # Separate the first column into "Ano" and "Origin" based on "/"
+  # Separate the first column into "Year" and "Origin" based on "/"
   suppressWarnings(
     df2 <- tidyr::separate(df, Name,
-                           c("Ano", "Origin"),
+                           c("Year", "Origin"),
                            sep = c("/")
     )
   )
 
-  # If "Origin" column contains NA values after the first few rows, set "Ano" to year
+  # If "Origin" column contains NA values after the first few rows, set "Year" to year
   if(base::all(base::is.na(df2$Origin[4:base::nrow(df2)]))){
-    df2$Origin <- df2$Ano
-    df2$Ano <- year
+    df2$Origin <- df2$Year
+    df2$Year <- year
   }
 
   # Separate "Origin" column into multiple columns based on "_"

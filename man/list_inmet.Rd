@@ -12,10 +12,10 @@ list_inmet(year = NULL, filename = NULL)
 \item{filename}{string containing the path and name of the file with the extension ".zip", if NULL (default) it will be saved in a temporary file}
 }
 \value{
-List containing: 1) a table containing the addresses of each file inside the zip for later extraction by the unzip() function of the utils package, 2) another structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
+List containing: 1) a table containing the addresses of each file inside the zip for later extraction by the unzip() function of the utils package, 2) Yearther structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
 }
 \description{
-Collects the available files for the year and returns a list containing: 1) a table containing the addresses of each file inside the zip for later extraction by the down_inmet() function, 2) another structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
+Collects the available files for the year and returns a list containing: 1) a table containing the addresses of each file inside the zip for later extraction by the down_inmet() function, 2) Yearther structured table with the information available in the file name (e,g, city, station code, year, date of start and end date) and 3) the address of the zip file.
 }
 \examples{
 
