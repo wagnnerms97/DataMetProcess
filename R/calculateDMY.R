@@ -118,9 +118,9 @@ calculateDMY <- function(data = NULL,
       # Calculate the mean of specified columns
       dplyr::across({{col_mean}}, \(x) base::mean(x, na.rm = TRUE)),
       # Calculate the max of specified columns
-      dplyr::across({{col_max}}, \(x) base::max(x, na.rm = TRUE)),
+      dplyr::across({{col_max}}, \(x) if (all(is.na(x))) NA else base::max(x, na.rm = TRUE)),
       # Calculate the min of specified columns
-      dplyr::across({{col_min}}, \(x) base::min(x, na.rm = TRUE))
+      dplyr::across({{col_min}}, \(x) if (all(is.na(x))) NA else base::min(x, na.rm = TRUE))
     )
 
   # Round numeric columns to the specified number of decimal places

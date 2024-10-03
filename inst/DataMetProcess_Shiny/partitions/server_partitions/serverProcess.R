@@ -175,6 +175,7 @@ serverProcess <- function(id, Data){
 
       tryCatch(
         {
+
           df <-
             dplyr::mutate(Data(),!!rlang::sym(colnames(Data())[1]) := as.Date(!!rlang::sym(colnames(Data())[1])))
 
