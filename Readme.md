@@ -301,6 +301,6 @@ be found in `inst/DataMetProcess_Shiny`
 
 The portable version of shiny can be downloaded and run, it does not require the installation of R or packages, as it already comes with a portable version of R with the packages installed
 
-> **Nota**: A primeira execução pode demorar um pouco.
+> **Nota**: The first run may take a while.
 
 [Download aqui](https://1drv.ms/f/s!AiGscn2-DwUAmZVQ4UExGnduEG5yzA?e=dH6EHV)
