@@ -303,4 +303,4 @@ The portable version of shiny can be downloaded and run, it does not require the
 
 > **Nota**: The first run may take a while.
 
-[Download aqui](https://1drv.ms/f/s!AiGscn2-DwUAmZVQ4UExGnduEG5yzA?e=dH6EHV)
+[Download](https://1drv.ms/f/s!AiGscn2-DwUAmZVQ4UExGnduEG5yzA?e=dH6EHV)
