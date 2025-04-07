@@ -31,7 +31,7 @@
 #' Data frame with:
 #' date;
 #' etref - reference evapotranspiration (mm/dia);
-#' dj - julian day;
+#' JD - julian day;
 #' DAP - days after planting;
 #' es - saturation vapor pressure (kPa);
 #' ea - actual vapor pressure (kPa);
@@ -118,8 +118,8 @@ calculateETrefPM <- function(data = NULL,
   # Store the initial number of columns in the data frame
   ncolbk <- base::ncol(data)
 
-  # Calculate the day of the year (dj) from the date column
-  data$dj <- base::as.numeric(
+  # Calculate the day of the year (JD) from the date column
+  data$JD <- base::as.numeric(
     base::format(
       base::as.Date(col_string(data, str = date, usestr = TRUE)), "%j"
     )

@@ -51,7 +51,7 @@ calculateETrefPM(
 Data frame with:
 date;
 etref - reference evapotranspiration (mm/dia);
-dj - julian day;
+JD - julian day;
 DAP - days after planting;
 es - saturation vapor pressure (kPa);
 ea - actual vapor pressure (kPa);
