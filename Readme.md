@@ -296,3 +296,11 @@ DMPshiny()
 
 The same applies to all the code related to the application, which can
 be found in `inst/DataMetProcess_Shiny`
+
+## Shiny Portable
+
+The portable version of shiny can be downloaded and run, it does not require the installation of R or packages, as it already comes with a portable version of R with the packages installed
+
+> **Nota**: A primeira execução pode demorar um pouco.
+
+[Download aqui](https://1drv.ms/f/s!AiGscn2-DwUAmZVQ4UExGnduEG5yzA?e=dH6EHV)
