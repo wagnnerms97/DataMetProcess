@@ -151,7 +151,10 @@ function(input, output,session){
          height = "70px",width= "196px")
   },deleteFile = FALSE)
 
-
+  output$gas <- renderImage({
+    list(src = materials$gas,
+         height = "70px",width= "70px")
+  },deleteFile = FALSE)
 
   serverDownInmet("downinmet")
 
