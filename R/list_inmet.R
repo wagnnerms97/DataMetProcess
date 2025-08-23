@@ -48,18 +48,34 @@ list_inmet <- function(
   }
 
   # Check if temp exists; if not, create a temporary file
-  if(base::exists("temp")){
-    base::invisible()
-  }else{
+  if(!base::exists("temp")){
     temp <- base::tempfile()
   }
 
   # Download the zip file containing the data for the specified year
-  utils::download.file(base::paste0(
-    "https://portal.inmet.gov.br/uploads/dadoshistoricos/",
-    year,
-    ".zip"
-  ), temp, method = "auto", cacheOK = FALSE)
+  tryCatch({
+    utils::download.file(
+      url = base::paste0(
+        "https://portal.inmet.gov.br/uploads/dadoshistoricos/",
+        year,
+        ".zip"
+      ),
+      destfile = temp,
+      method = "auto",
+      cacheOK = FALSE
+    )
+  }, error = function(e){
+    stop(
+      paste0(
+        "Error downloading data for year ", year, ".\n",
+        "Possible cause: download timeout exceeded.\n",
+        "Suggested solution: increase the maximum download time, e.g.:\n",
+        "options(timeout = 1000)\n\n",
+        "Original error message: ", e$message
+      ),
+      call. = FALSE
+    )
+  })
 
   # List the contents of the zip file
   df <- utils::unzip(zipfile = temp, list = TRUE)[1]

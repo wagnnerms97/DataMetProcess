@@ -1,7 +1,7 @@
 Package: DataMetProcess
 Type: Package
 Title: Meteorological Data Processing
-Version: 1.0.5
+Version: 1.0.6
 Authors@R:
     c(
       person("Wagner Martins dos", "Santos",
@@ -27,7 +27,7 @@ Authors@R:
               comment = ""),
       person("Thieres George Freire", "da Silva",
               email = "", role = "aut",
-              comment = ""),
+              comment = c(ORCID = "0000-0002-8355-4935")),
       person("João L.M.P.", "de Lima",
               email = "", role = "aut",
               comment = ""),
@@ -36,7 +36,7 @@ Authors@R:
               comment = ""),
       person("Alexandre Maniçoba da Rosa Ferraz", "Jardim",
               email = "", role = "aut",
-              comment = "")
+              comment = c(ORCID = "0000-0001-7094-3635"))
     )
 Maintainer: Wagner Martins dos Santos <wagnnerms97@gmail.com>
 Description: Set of tools aimed at processing meteorological data, converting hourly recorded data to daily, monthly and annual data.

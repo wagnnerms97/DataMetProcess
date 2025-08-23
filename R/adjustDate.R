@@ -54,11 +54,25 @@ adjustDate <- function(
     col_hour = NULL,
     fuso = NULL
 ){
+  pad_two_digits <- function(x) {
+    x <- as.character(x) # convert string
+
+    if (any(grepl(":", x))) {
+      parts <- strsplit(x, ":", fixed = TRUE)
+      formatted <- sapply(parts, function(p) {
+        paste0(sprintf("%02d", as.integer(p[1])), ":", p[2])
+      })
+      return(formatted)
+    } else {
+      return(sprintf("%02d", as.integer(x)))
+    }
+  }
 
   # Initialize the variable Date_Hour as NULL
   Date_Hour <- NULL
 
   # Extract the first two characters (hours) from the col_hour column and overwrite the column in the data frame
+  data[col_hour] <- pad_two_digits(data[[col_hour]])
   data[col_hour] <- substr(unlist(data[col_hour], use.names = FALSE), 1, 2)
 
   # Combine the col_date and col_hour columns into a new column called 'Date_Hour'
