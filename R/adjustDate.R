@@ -48,54 +48,52 @@
 #' head(df[1:2])
 #'
 
-adjustDate <- function(
-    data = NULL,
-    col_date = NULL,
-    col_hour = NULL,
-    fuso = NULL
-){
-  pad_two_digits <- function(x) {
-    x <- as.character(x) # convert string
+adjustDate <- function(data = NULL, col_date = NULL, col_hour = NULL, fuso = NULL) {
 
-    if (any(grepl(":", x))) {
-      parts <- strsplit(x, ":", fixed = TRUE)
-      formatted <- sapply(parts, function(p) {
-        paste0(sprintf("%02d", as.integer(p[1])), ":", p[2])
-      })
-      return(formatted)
-    } else {
-      return(sprintf("%02d", as.integer(x)))
-    }
+  # Função robusta para tratar diferentes formatos de hora
+  pad_two_digits <- function(x) {
+    x <- as.character(x)
+
+    # Extrair qualquer padrão de HHMM ou HH, ignorando texto extra
+    extracted <- stringr::str_extract(x, "[0-9]{2,4}")
+
+    # Se HHMM (ex: "0000" ou "1300"), converter para HH
+    extracted <- ifelse(
+      nchar(extracted) == 4,
+      substr(extracted, 1, 2),
+      extracted
+    )
+
+    # Formatar para HH
+    sprintf("%02d", as.integer(extracted))
   }
 
-  # Initialize the variable Date_Hour as NULL
   Date_Hour <- NULL
 
-  # Extract the first two characters (hours) from the col_hour column and overwrite the column in the data frame
-  data[col_hour] <- pad_two_digits(data[[col_hour]])
-  data[col_hour] <- substr(unlist(data[col_hour], use.names = FALSE), 1, 2)
+  # Aplicar a limpeza
+  data[[col_hour]] <- pad_two_digits(data[[col_hour]])
 
-  # Combine the col_date and col_hour columns into a new column called 'Date_Hour'
-  data <- tidyr::unite(data, 'Date_Hour',
-                       {{col_date}},
-                       {{col_hour}},
-                       remove = TRUE, sep = " ")
+  # Unir data e hora
+  data <- tidyr::unite(
+    data, "Date_Hour",
+    {{ col_date }}, {{ col_hour }},
+    remove = TRUE, sep = " "
+  )
 
-  # Convert the 'Date_Hour' column to the appropriate datetime format
+  # Converter para datetime com timezone correto
   data <- dplyr::mutate(
     data,
     Date_Hour = lubridate::as_datetime(
       base::format(
         base::as.POSIXct(
           base::strptime(Date_Hour, "%Y-%m-%d %H"),
-          usetz = TRUE,
-          tz = "Etc/GMT-0"
+          usetz = TRUE, tz = "Etc/GMT-0"
         ),
         tz = fuso
       )
     )
   )
 
-  # Return the modified data frame
   return(data)
 }
+
