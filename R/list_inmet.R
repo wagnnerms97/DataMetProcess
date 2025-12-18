@@ -65,17 +65,23 @@ list_inmet <- function(
       cacheOK = FALSE
     )
   }, error = function(e){
-    stop(
+    message(
       paste0(
-        "Error downloading data for year ", year, ".\n",
-        "Possible cause: download timeout exceeded.\n",
+        "Data for year ", year, " is currently unavailable.\n",
+        "Possible reasons: no internet connection, server down, or URL changed.\n",
+        "Please check your connection and try again later.",
         "Suggested solution: increase the maximum download time, e.g.:\n",
-        "options(timeout = 1000)\n\n",
-        "Original error message: ", e$message
-      ),
-      call. = FALSE
+        "options(timeout = 1000)\n\n"
+      )
     )
+    return(NULL)
   })
+
+  # Check if the download was successful.
+  if(!file.exists(temp) || file.size(temp) == 0){
+    message("Download failed or file is empty.")
+    return(NULL)
+  }
 
   # List the contents of the zip file
   df <- utils::unzip(zipfile = temp, list = TRUE)[1]
