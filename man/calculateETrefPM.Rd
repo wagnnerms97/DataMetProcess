@@ -2,109 +2,64 @@
 % Please edit documentation in R/calculateETrefPM.R
 \name{calculateETrefPM}
 \alias{calculateETrefPM}
-\title{The FAO Penman–Monteith for calculating daily reference evapotranspiration}
+\title{FAO Penman-Monteith method for daily reference evapotranspiration}
 \usage{
 calculateETrefPM(
-  data = NULL,
-  lat = NULL,
-  alt = NULL,
-  za = NULL,
+  data,
+  lat,
+  alt,
+  za,
   DAP = 1,
-  date = NULL,
+  date,
   Ta = NULL,
-  G = NULL,
+  Tmin = NULL,
+  Tmax = NULL,
   RH = NULL,
-  Rg = NULL,
-  AP = NULL,
-  WS = NULL,
+  RHmin = NULL,
+  RHmax = NULL,
+  Rg,
+  AP,
+  WS,
+  G = NULL,
   Kc = NULL
 )
 }
 \arguments{
 \item{data}{Data frame containing the data}
 
-\item{lat}{Numeric, latitude in decimals}
+\item{lat}{Numeric, latitude in decimal degrees}
 
 \item{alt}{Numeric, altitude in meters}
 
 \item{za}{Numeric, anemometer height in meters}
 
-\item{DAP}{Numeric, days after planting for the first column date}
+\item{DAP}{Numeric, days after planting for the first date}
 
-\item{date}{String with the column name containing date records (R default date: "\%Y-\%m-\%d")}
+\item{date}{String with the column name containing date records}
 
-\item{Ta}{String with the column name containing temperature records in °C}
+\item{Ta}{Optional. String with the column name containing mean air temperature (degC)}
 
-\item{G}{Optional, if NULL will be considered as zero. String with the column name containing soil heat flux (MJ/m²/day)}
+\item{Tmin}{Optional. String with the column name containing minimum air temperature (degC)}
 
-\item{RH}{String with the column name containing relative humidity records in \%}
+\item{Tmax}{Optional. String with the column name containing maximum air temperature (degC)}
 
-\item{Rg}{String with the column name containing global radiation records in MJ/m²}
+\item{RH}{String with the column name containing mean relative humidity (percent)}
 
-\item{AP}{String with the column name containing atmospheric pressure records in hPa}
+\item{RHmin}{Optional. String with the column name containing minimum relative humidity (percent)}
 
-\item{WS}{String with the column name containing wind speed records in m/s}
+\item{RHmax}{Optional. String with the column name containing maximum relative humidity (percent)}
 
-\item{Kc}{Optional, when not NULL the crop evapotranspiration ETc is calculated based on ETref. String with the column name containing crop coefficient (Kc) records}
-}
-\value{
-Data frame with:
-date;
-etref - reference evapotranspiration (mm/dia);
-JD - julian day;
-DAP - days after planting;
-es - saturation vapor pressure (kPa);
-ea - actual vapor pressure (kPa);
-delta - slope of the saturated water–vapor-pressure curve (kPA/°C);
-y - psychrometric constant (kPA/°C);
-rn - net radiation (MJ/m²/dia);
-etc - crop evapotranspiration (mm/dia) (depends on supply of Kc)
+\item{Rg}{String with the column name containing global radiation (MJ/m2/day)}
+
+\item{AP}{String with the column name containing atmospheric pressure (hPa)}
+
+\item{WS}{String with the column name containing wind speed (m/s)}
+
+\item{G}{Optional. If NULL, soil heat flux is assumed to be zero (MJ/m2/day)}
+
+\item{Kc}{Optional. Crop coefficient column name}
 }
 \description{
-Calculation of daily reference evapotranspiration using the PM method for a dataset stored in a data.frame (Allen et al., 1998).
-}
-\details{
-The FAO Penman–Monteith method:
-
-\deqn{ETrefPM = \frac{0.408 \Delta(Rn-G) + \gamma \frac{900}{T+273}u_{2}(e_{s}-e_{a})}{\Delta+\gamma(1+0.34u_{2})}}
-
-where: ETref - reference evapotranspiration (mm/dia), delta - slope of the saturated water–vapor-pressure curve (kPA/°C), Rn - net radiation (MJ/m²/dia), G - soil heat flux (MJ/m²/day), y - psychrometric constant (kPA/°C), T - average daily air temperature (°C), u2 - wind speed at 2m height (m/s), es - saturation vapor pressure (kPa), e ea - actual vapor pressure (kPa)
-}
-\examples{
-address <-
- base::system.file("extdata",
-                    "ex2_daily.CSV",
-                    package = "DataMetProcess")
-
-df <- read.table(
-address,
-h = TRUE,
-sep = ";"
-)
-
-#converting to Mj/m
-df$radiacao_global_kj_m <- df$radiacao_global_kj_m/1000
-colnames(df)[3] <- "radiacao_global_mj_m"
-
-df.Eto <-
-  calculateETrefPM(
-    data = df,
-    lat = -21.980353,
-    alt = 859.29,
-    za = 10,
-    DAP = 1,
-    date = colnames(df)[1],
-    Ta = colnames(df)[7],
-    G = NULL,
-    RH = colnames(df)[15],
-    Rg = colnames(df)[3],
-    AP = colnames(df)[4],
-    WS = colnames(df)[18],
-    Kc = NULL
-  )
-
-
-}
-\references{
-Allen, R.G., Pereira, L.S., Raes, D., Smith, M., 1998. Crop evapotranspiration – guidelines for computing crop water requirements – FAO Irrigation and Drainage Paper 56. FAO, 1998. ISBN 92-5-104219-5.
+Calculation of daily reference evapotranspiration using the FAO-56
+Penman-Monteith method for a dataset stored in a data.frame.
 }

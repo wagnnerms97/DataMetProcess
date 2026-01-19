@@ -1,220 +1,155 @@
 #' @title
-#' The FAO Penman–Monteith for calculating daily reference evapotranspiration
+#' FAO Penman-Monteith method for daily reference evapotranspiration
 #'
 #' @description
-#' Calculation of daily reference evapotranspiration using the PM method for a dataset stored in a data.frame (Allen et al., 1998).
+#' Calculation of daily reference evapotranspiration using the FAO-56
+#' Penman-Monteith method for a dataset stored in a data.frame.
 #'
 #' @param data Data frame containing the data
-#' @param lat Numeric, latitude in decimals
+#' @param lat Numeric, latitude in decimal degrees
 #' @param alt Numeric, altitude in meters
 #' @param za Numeric, anemometer height in meters
-#' @param DAP Numeric, days after planting for the first column date
-#' @param date String with the column name containing date records (R default date: "\%Y-\%m-\%d")
-#' @param Ta String with the column name containing temperature records in °C
-#' @param G Optional, if NULL will be considered as zero. String with the column name containing soil heat flux (MJ/m²/day)
-#' @param RH String with the column name containing relative humidity records in \%
-#' @param Rg String with the column name containing global radiation records in MJ/m²
-#' @param AP String with the column name containing atmospheric pressure records in hPa
-#' @param WS String with the column name containing wind speed records in m/s
-#' @param Kc Optional, when not NULL the crop evapotranspiration ETc is calculated based on ETref. String with the column name containing crop coefficient (Kc) records
-#'
-#' @details
-#' The FAO Penman–Monteith method:
-#'
-#' \deqn{ETrefPM = \frac{0.408 \Delta(Rn-G) + \gamma \frac{900}{T+273}u_{2}(e_{s}-e_{a})}{\Delta+\gamma(1+0.34u_{2})}}
-#'
-#' where: ETref - reference evapotranspiration (mm/dia), delta - slope of the saturated water–vapor-pressure curve (kPA/°C), Rn - net radiation (MJ/m²/dia), G - soil heat flux (MJ/m²/day), y - psychrometric constant (kPA/°C), T - average daily air temperature (°C), u2 - wind speed at 2m height (m/s), es - saturation vapor pressure (kPa), e ea - actual vapor pressure (kPa)
-#'
-#' @references Allen, R.G., Pereira, L.S., Raes, D., Smith, M., 1998. Crop evapotranspiration – guidelines for computing crop water requirements – FAO Irrigation and Drainage Paper 56. FAO, 1998. ISBN 92-5-104219-5.
-#'
-#' @return
-#' Data frame with:
-#' date;
-#' etref - reference evapotranspiration (mm/dia);
-#' JD - julian day;
-#' DAP - days after planting;
-#' es - saturation vapor pressure (kPa);
-#' ea - actual vapor pressure (kPa);
-#' delta - slope of the saturated water–vapor-pressure curve (kPA/°C);
-#' y - psychrometric constant (kPA/°C);
-#' rn - net radiation (MJ/m²/dia);
-#' etc - crop evapotranspiration (mm/dia) (depends on supply of Kc)
-#'
+#' @param DAP Numeric, days after planting for the first date
+#' @param date String with the column name containing date records
+#' @param Ta Optional. String with the column name containing mean air temperature (degC)
+#' @param Tmin Optional. String with the column name containing minimum air temperature (degC)
+#' @param Tmax Optional. String with the column name containing maximum air temperature (degC)
+#' @param RH String with the column name containing mean relative humidity (percent)
+#' @param RHmin Optional. String with the column name containing minimum relative humidity (percent)
+#' @param RHmax Optional. String with the column name containing maximum relative humidity (percent)
+#' @param Rg String with the column name containing global radiation (MJ/m2/day)
+#' @param AP String with the column name containing atmospheric pressure (hPa)
+#' @param WS String with the column name containing wind speed (m/s)
+#' @param G Optional. If NULL, soil heat flux is assumed to be zero (MJ/m2/day)
+#' @param Kc Optional. Crop coefficient column name
 #'
 #' @export
-#'
-#'
-#' @examples
-#' address <-
-#'  base::system.file("extdata",
-#'                     "ex2_daily.CSV",
-#'                     package = "DataMetProcess")
-#'
-#' df <- read.table(
-#' address,
-#' h = TRUE,
-#' sep = ";"
-#' )
-#'
-#' #converting to Mj/m
-#' df$radiacao_global_kj_m <- df$radiacao_global_kj_m/1000
-#' colnames(df)[3] <- "radiacao_global_mj_m"
-#'
-#' df.Eto <-
-#'   calculateETrefPM(
-#'     data = df,
-#'     lat = -21.980353,
-#'     alt = 859.29,
-#'     za = 10,
-#'     DAP = 1,
-#'     date = colnames(df)[1],
-#'     Ta = colnames(df)[7],
-#'     G = NULL,
-#'     RH = colnames(df)[15],
-#'     Rg = colnames(df)[3],
-#'     AP = colnames(df)[4],
-#'     WS = colnames(df)[18],
-#'     Kc = NULL
-#'   )
-#'
-#'
-
-
-calculateETrefPM <- function(data = NULL,
-                             lat = NULL,
-                             alt = NULL,
-                             za = NULL,
-                             DAP = 1,
-                             date = NULL,
-                             Ta = NULL,
-                             G = NULL,
-                             RH = NULL,
-                             Rg = NULL,
-                             AP = NULL,
-                             WS = NULL,
-                             Kc = NULL
-
+calculateETrefPM <- function(
+    data,
+    lat,
+    alt,
+    za,
+    DAP = 1,
+    date,
+    Ta = NULL,
+    Tmin = NULL,
+    Tmax = NULL,
+    RH = NULL,
+    RHmin = NULL,
+    RHmax = NULL,
+    Rg,
+    AP,
+    WS,
+    G = NULL,
+    Kc = NULL
 ){
-  # Define a helper function to extract a column from the data frame
-  col_string <- function(
-    data = NULL,
-    ncol = 1,
-    str = NULL,
-    usestr = FALSE
-  ){
-    if(usestr){
-      base::unlist(data[str], use.names = FALSE)
-    }else{
-      base::unlist(data[base::colnames(data)[ncol]], use.names = FALSE)
-    }
+
+  # Helper to extract columns
+  get_col <- function(x) base::unlist(data[[x]], use.names = FALSE)
+
+  # Soil Heat Flux (G)
+  if (is.null(G)) {
+    G_val <- rep(0, nrow(data))
+  } else {
+    G_val <- get_col(G)
   }
 
-  # If G (soil heat flux density) is not provided, set it to 0
-  if(length(G) == 0){
-    data$G <- 0
-    G <- "G"
+  # Dates and time constants
+  data$date <- as.Date(get_col(date))
+  data$JD   <- as.numeric(format(data$date, "%j"))
+  data$DAP  <- seq(from = DAP, length.out = nrow(data))
+
+  # Unit conversion
+  Rs   <- get_col(Rg)
+  PkPa <- get_col(AP) / 10  # hPa to kPa
+  uz   <- get_col(WS)
+
+  # --- 1. Temperature and Saturation Vapor Pressure (es) ---
+  if (!is.null(Tmin) && !is.null(Tmax)) {
+    Tmin_v <- get_col(Tmin)
+    Tmax_v <- get_col(Tmax)
+    Tmean  <- (Tmin_v + Tmax_v) / 2
+
+    es_Tmin <- 0.6108 * exp((17.27 * Tmin_v) / (Tmin_v + 237.3))
+    es_Tmax <- 0.6108 * exp((17.27 * Tmax_v) / (Tmax_v + 237.3))
+    es <- (es_Tmin + es_Tmax) / 2
+  } else if (!is.null(Ta)) {
+    Tmean <- get_col(Ta)
+    es <- 0.6108 * exp((17.27 * Tmean) / (Tmean + 237.3))
+  } else {
+    stop("Provide Ta or both Tmin and Tmax.")
   }
 
-  # Store the initial number of columns in the data frame
-  ncolbk <- base::ncol(data)
+  # --- 2. Actual Vapor Pressure (ea) ---
+  if (!is.null(RHmin) && !is.null(RHmax) && !is.null(Tmin) && !is.null(Tmax)) {
+    ea <- (es_Tmin * get_col(RHmax) / 100 +
+             es_Tmax * get_col(RHmin) / 100) / 2
+  } else if (!is.null(RH)) {
+    ea <- es * get_col(RH) / 100
+  } else {
+    stop("Provide RH or RHmin/RHmax (requires Tmin/Tmax).")
+  }
 
-  # Calculate the day of the year (JD) from the date column
-  data$JD <- base::as.numeric(
-    base::format(
-      base::as.Date(col_string(data, str = date, usestr = TRUE)), "%j"
-    )
+  # --- 3. Delta and Gamma ---
+  # Delta calculated on Tmean (FAO-56 Eq. 13)
+  es_Delta <- 0.6108 * exp((17.27 * Tmean) / (Tmean + 237.3))
+  Delta    <- (4098 * es_Delta) / (Tmean + 237.3)^2
+  gamma    <- 0.000665 * PkPa
+
+  # --- 4. Wind speed at 2m ---
+  u2 <- uz * 4.87 / log(67.8 * za - 5.42)
+
+  # --- 5. Extraterrestrial Radiation (Ra) ---
+  dr <- 1 + 0.033 * cos(2 * pi * data$JD / 365)
+  delta_rad <- 0.409 * sin(2 * pi * data$JD / 365 - 1.39)
+  lat_rad   <- lat * pi / 180
+
+  # Sunset hour angle
+  ws <- acos(-tan(lat_rad) * tan(delta_rad))
+
+  Ra <- (24 * 60 / pi) * 0.082 * dr * (ws * sin(lat_rad) * sin(delta_rad) +
+                                         cos(lat_rad) * cos(delta_rad) * sin(ws))
+
+  # --- 6. Net Radiation (Rn) ---
+  Rso <- (0.75 + 2e-5 * alt) * Ra
+  Rns <- (1 - 0.23) * Rs # Default Albedo = 0.23
+
+  # Solar radiation ratio (limited to 1.0)
+  ratio_Rs_Rso <- Rs / Rso
+  ratio_Rs_Rso[ratio_Rs_Rso > 1] <- 1
+  ratio_Rs_Rso[ratio_Rs_Rso < 0.33] <- 0.33
+
+  fcloud <- (1.35 * ratio_Rs_Rso - 0.35)
+
+  if (!is.null(Tmin) && !is.null(Tmax)) {
+    Rnl <- 4.903e-9 * (((Tmax_v + 273.15)^4 + (Tmin_v + 273.15)^4) / 2) * (0.34 - 0.14 * sqrt(ea)) * fcloud
+  } else {
+    Rnl <- 4.903e-9 * (Tmean + 273.15)^4 * (0.34 - 0.14 * sqrt(ea)) * fcloud
+  }
+
+  Rn <- Rns - Rnl
+
+  # --- 7. Reference Evapotranspiration (ET0) ---
+  ET0 <- (
+    0.408 * Delta * (Rn - G_val) +
+      gamma * (900 / (Tmean + 273)) * u2 * (es - ea)
+  ) / (
+    Delta + gamma * (1 + 0.34 * u2)
   )
 
-  # Generate a sequence for DAP (Day After Planting) starting from the provided DAP
-  data$DAP <- seq(from = DAP, length.out = nrow(data), by = 1)
+  # Output organization
+  data_return <- data.frame(Date = data$date)
+  data_return$es    <- es
+  data_return$ea    <- ea
+  data_return$Delta <- Delta
+  data_return$gamma <- gamma
+  data_return$Rn    <- Rn
+  data_return$u2    <- u2
+  data_return$ET0   <- ET0
 
-  # Calculate es (saturation vapor pressure)
-  data$es <- 0.611 * 10^((7.5 * col_string(data, str = Ta, usestr = TRUE)) /
-                           (237.3 + col_string(data, str = Ta, usestr = TRUE)))
-
-  # Calculate delta (slope of the vapor pressure curve)
-  data$delta <- (4098 * col_string(data, ncolbk + 3)) /
-    ((237.3 + col_string(data, str = Ta, usestr = TRUE))^2)
-
-  # Calculate ea (actual vapor pressure)
-  data$ea <-
-    col_string(data, str = RH, usestr = TRUE) / 100 * col_string(data, ncolbk + 3)
-
-  # Convert pressure to kPa
-  data$p_kpa <- col_string(data, str = AP, usestr = TRUE) / 10
-
-  # Calculate psychrometric constant (gamma)
-  data$y <- 0.665 * (10^(-3)) * col_string(data, ncolbk + 6)
-
-  # Convert wind speed at 2 meters height
-  data$u2 <-
-    col_string(data, 5) * 4.87 / (base::log(67.8 * za - 5.42))
-
-  # Calculate dr (inverse relative distance Earth-Sun)
-  data$dr <-
-    1 + 0.033 * base::cos(2 * pi * col_string(data, ncolbk + 1) / 365)
-
-  # Calculate delta_rad (solar declination)
-  data$delta_rad <-
-    0.409 * base::sin((2 * pi * col_string(data, ncolbk + 1) / 365) - 1.39)
-
-  # Calculate sunset hour angle (h)
-  data$h <-
-    base::acos(-(base::tan(lat * (pi / 180)) *
-                   base::tan(col_string(data, ncolbk + 10))))
-
-  # Calculate extraterrestrial radiation (qo)
-  data$qo <-
-    (24 * (60) / pi) * 0.082 * col_string(data, ncolbk + 9) *
-    (col_string(data, ncolbk + 11) *
-       base::sin(lat * (pi / 180)) * base::sin(col_string(data, ncolbk + 10)) +
-       base::cos(lat * (pi / 180)) * base::cos(col_string(data, ncolbk + 10)) *
-       base::sin(col_string(data, ncolbk + 11)))
-
-  # Calculate clear sky radiation (rgo)
-  data$rgo <-
-    (0.75 + 2 * 10^-5 * alt) * col_string(data, ncolbk + 12)
-
-  # Calculate net shortwave radiation (boc)
-  data$boc <- col_string(data, str = Rg, usestr = TRUE) * (1 - 0.23)
-
-  # Calculate net longwave radiation (bol)
-  data$bol <-
-    4.903 * 10^-9 * (col_string(data, str = Ta, usestr = TRUE) + 273.15)^4 *
-    (0.34 - 0.14 * base::sqrt(col_string(data, ncolbk + 5))) *
-    (1.35 * (col_string(data, str = Rg, usestr = TRUE) /
-               col_string(data, ncolbk + 13)) - 0.35)
-
-  # Calculate net radiation (rn)
-  data$rn <-
-    col_string(data, ncolbk + 14) -
-    col_string(data, ncolbk + 15)
-
-  # Calculate reference evapotranspiration (etref) using the Penman-Monteith equation
-  data$etref <-
-    ((0.408 * col_string(data, ncolbk + 4) *
-        (col_string(data, ncolbk + 16) - col_string(data, str = G, usestr = TRUE))) +
-       ((col_string(data, ncolbk + 7) * (900 /
-                                           (col_string(data, str = Ta, usestr = TRUE) + 273))) *
-          (col_string(data, ncolbk + 8) *
-             (col_string(data, ncolbk + 3) -
-                col_string(data, ncolbk + 5))))) /
-    (col_string(data, ncolbk + 4) +
-       col_string(data, ncolbk + 7) * (1 + 0.34 *
-                                         col_string(data, ncolbk + 8)))
-
-  # Calculate crop evapotranspiration (etc) if Kc is provided
-  if(length(Kc) != 0){
-    if(Kc != ""){
-      data$etc <- data$etref * col_string(data, str = Kc, usestr = TRUE)
-    }
+  if (!is.null(Kc)) {
+    data_return$ETc <- ET0 * get_col(Kc)
   }
 
-  # Identify the index of the date column
-  ndate <- which(colnames(data) == date)
-
-  # Reorder and return the final data frame
-  data <- data[c(ndate, (ncolbk + 17):base::ncol(data), (ncolbk + 1):(ncolbk + 3), (ncolbk + 5), (ncolbk + 4), (ncolbk + 7), (ncolbk + 16))]
-
-  return(data)
+  return(data_return)
 }
